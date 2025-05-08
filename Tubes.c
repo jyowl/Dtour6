@@ -1,57 +1,17 @@
 #include<stdio.h>
+
 int main(){
     int n;
-    
+
+    printf("Pilih menu (1. Admin / 2. User) : "); scanf("%d", &n) ;
     switch (n)
     {
-    printf("pilih menu 1:"); scanf("%d", n);
     case 1:
-    __ANONYMOUS_DEFINED
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    break;
-
+        printf("Menu Admin :");
+        break;
     case 2:
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-    break;       
-
+        printf("Menu User : ");
+        break;
     default:
         break;
     }
