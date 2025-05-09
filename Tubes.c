@@ -22,8 +22,18 @@ void login(){
     printf("Masukka Password\t: "); scanf("%s", inputpas);
     if (strcmp(inputus,inp.username)== 0 && strcmp(inputpas,inp.password)== 0){
         printf("Selamat Datang di D'Tour!\n");
-    } else
-    {
+    } else {
+        printf("Username atau Password salah!\n");
+        for ( i = 0; i < 3; i++)
+        {
+            printf("Masukkan Username\t: "); scanf("%s", inputus);
+            printf("Masukka Password\t: "); scanf("%s", inputpas);
+            if (strcmp(inputus,inp.username)== 0 && strcmp(inputpas,inp.password)== 0) {
+                printf("Selamat Datang di D'Tour!\n");
+                break;
+            } 
+            printf("Logil gagal!! Silahkan direfresh\n");
+        }
     }
 }
 
