@@ -32,9 +32,14 @@ void login(){
                 printf("Selamat Datang di D'Tour!\n");
                 break;
             } 
-            printf("Logil gagal!! Silahkan direfresh\n");
+            printf("\n");
+            printf("Login gagal!! Silahkan direfresh\n");
         }
     }
+}
+
+void jenisTrip(){
+    
 }
 
 int main(){
