@@ -1,7 +1,6 @@
 #include<stdio.h>
 #include<string.h>
-#include<stdlib.h>
-
+#include<slllll
 struct akun
 {
     char username[100], password[100];
@@ -58,4 +57,3 @@ int main(){
     }
 
 }
- bla bla bla bla 
