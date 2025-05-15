@@ -2,7 +2,7 @@
 #include<string.h>
 #include<slllll
 struct akun
-{
+{ 
     char username[100], password[100];
 } inp;
 
@@ -36,7 +36,7 @@ void login(){
         }
     }
 }
-
+printf("hallo");
 void jenisTrip(){
     
 }
