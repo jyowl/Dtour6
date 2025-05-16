@@ -1,61 +1,65 @@
 #include<stdio.h>
-#include<string.h>
 #include<stdlib.h>
+#include<string.h>
 
-struct akun
-{
-    char username[100], password[100];
-} inp;
 
-void regis(){
-    printf("Registrasi Akun!\n");
-    printf("Masukkan Username\t: "); scanf("%s", inp.username);
-    printf("Masukkan Password\t: "); scanf("%s", inp.password);
-    system("pause");
+//List fungsi
+void loginAdmin(); 
+void menuAdmin();
+
+void loginAdmin(){
+    int n = 3;
+    char usrAdmin[100], passAdmin[100];
+    getchar();
     system("cls");
-}
-void login(){
-    char inputus[100], inputpas[100];
-    int i;
-    printf("Login Akun!\n");
-    printf("Masukkan Username\t: "); scanf("%s", inputus);
-    printf("Masukka Password\t: "); scanf("%s", inputpas);
-    if (strcmp(inputus,inp.username)== 0 && strcmp(inputpas,inp.password)== 0){
-        printf("Selamat Datang di D'Tour!\n");
-    } else {
-        printf("Username atau Password salah!\n");
-        for ( i = 0; i < 3; i++)
-        {
-            printf("Masukkan Username\t: "); scanf("%s", inputus);
-            printf("Masukka Password\t: "); scanf("%s", inputpas);
-            if (strcmp(inputus,inp.username)== 0 && strcmp(inputpas,inp.password)== 0) {
-                printf("Selamat Datang di D'Tour!\n");
+    while (n > 0){
+        printf("Masukkan Username : "); gets(usrAdmin);
+        printf("Masukkan Password : "); gets(passAdmin);
+        if (strcmp(usrAdmin, "admin") == 0 && strcmp(passAdmin, "admin123") == 0){
+            printf("Login Berhasil! Silahkan masuk! ");
+            break;
+        }
+        else {
+            printf("Login Gagal! Silahkan coba lagi\n");
+            n--;
+            if (n == 0) {
+                printf("Kesempatan login sudah habis!!");
                 break;
-            } 
+            }
+            printf("Kesempatan login tersisa %d \n", n);
             printf("\n");
-            printf("Login gagal!! Silahkan direfresh\n");
         }
     }
 }
 
-void jenisTrip(){
-    
-}
 
+
+//Menu Main
 int main(){
     int n;
-    printf("Pilih menu (1. Admin/ 2. User) : "); scanf("%d", &n);
+
+    system("cls");
+    printf("Pilih Menu : \n");
+    printf("1. Login Admin\n");
+    printf("2. Registrasi User\n");
+    printf("3. Login User\n");
+    printf("Input Pilihan : "); scanf("%d", &n);
+    
     switch (n)
     {
-    case 1:
-        printf("Menu admin :");
+    case 1 :
+        loginAdmin();
         break;
-    case 2:
-        regis();
-        login();
+    case 2 :
+        printf("2. Registrasi User");
+        break;
+    case 3 :
+        printf("3. Login User");
+        break;    
     default:
+        printf("Pilihan tidak ada dimenu, silahkan pilih ulang!");
+        system("pause");
+        system("cls");
         break;
     }
-
-}
- bla bla bla bla 
+}   
