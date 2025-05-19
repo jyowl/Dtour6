@@ -3,9 +3,15 @@
 #include<string.h>
 
 
+struct dataAdmin {
+    char username[100], password[100];
+}data;
+
+
 //List fungsi
 void loginAdmin(); 
 void menuAdmin();
+void regisUser();
 
 void loginAdmin(){
     int n = 3;
@@ -17,6 +23,7 @@ void loginAdmin(){
         printf("Masukkan Password : "); gets(passAdmin);
         if (strcmp(usrAdmin, "admin") == 0 && strcmp(passAdmin, "admin123") == 0){
             printf("Login Berhasil! Silahkan masuk! ");
+            menuAdmin();
             break;
         }
         else {
@@ -32,6 +39,15 @@ void loginAdmin(){
     }
 }
 
+void menuAdmin(){
+    system("cls");
+    printf("Babi lu");
+}
+
+void regisUSer(){
+    FILE *data_akun;
+    
+}
 
 
 //Menu Main
