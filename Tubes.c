@@ -1,10 +1,9 @@
 #include<stdio.h>
 #include<string.h>
 #include<stdlib.h>
-#include<stdbool.h>
 
-//deklarasi variabel struct dan akun
-struct akun {
+struct akun
+{
     char username[100], password[100];
 };
 FILE *data_akun;
@@ -130,8 +129,8 @@ void loginAdmin(){
     }
 }
 
-void menuUser(){
-    printf("Mantap");
+void jenisTrip(){
+    
 }
 
 int main(){
@@ -159,3 +158,4 @@ int main(){
         break;
     }
 }
+
