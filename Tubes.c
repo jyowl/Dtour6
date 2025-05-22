@@ -428,7 +428,7 @@ void TopUp(){
 }
 
 void RiwayatTrip(){
-
+    printf("== Riwayat Trip ==\n");
 }
 
 void Feedback(){
