@@ -13,6 +13,7 @@ struct akun {
 
 //deklarasi nama File
 FILE *data_akun;
+FILE *data_akun2; //untuk hapus akun customer
 FILE *jenis_trip;
 FILE *pesanan_trip;
 FILE *pembayaran_trip;
@@ -184,6 +185,7 @@ void menuAdmin(){
     case 5:
         break;
     case 6:
+        hapusAkun();
         break;
     case 7:
         printf("Anda berhasil logout sampai jumpa kembali..\n");
@@ -320,9 +322,44 @@ void lihatAkun(){
 }
 
 void hapusAkun(){
+    system("cls");
+    struct akun user;
+    char usnhapus[50];
+    bool found = false;
+    
+    printf("Masukkan username yang ingin dihapus : "); gets(usnhapus);
     data_akun = fopen("data_akun.dat", "rb");
-    FILE *temp = fopen("temp.dat", "wb");
+    data_akun2 = fopen("data_akun2.dat", "wb");
 
+    if (data_akun == NULL || data_akun2 == NULL) {
+        printf("File tidak ditemukan!\n");
+        return;
+    }
+    
+    while (fread(&user, sizeof(struct akun), 1, data_akun)) {
+        if (strcmp(user.username, usnhapus) != 0) {
+            fwrite(&user, sizeof(struct akun), 1, data_akun2);
+        } else {
+            found = true;
+        }
+    }
+
+    fclose(data_akun);
+    fclose(data_akun2);
+
+    if(found){
+        remove("data_akun.dat");
+        rename("data_akun2.dat", "data_akun.dat");
+        printf("Akun dengan username %s berhasil dihapus.\n", usnhapus);
+    } else {
+        remove("data_akun2.dat");
+        printf("Akun dengan username %s tidak ditemukan.\n", usnhapus);
+    }
+
+    printf("\n");
+    printf("Tekan Enter untuk kembali ke menu admin...\n");
+    system("pause");
+    menuAdmin();
 }
 
 //fungsi User
