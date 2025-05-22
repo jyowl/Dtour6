@@ -313,6 +313,10 @@ void lihatAkun(){
         printf("Email : %s\n", user[i].email);
         printf("\n");
     }
+
+    printf("Tekan Enter untuk kembali ke menu admin...\n");
+    system("pause");
+    menuAdmin();
 }
 
 void hapusAkun(){
