@@ -3,11 +3,11 @@
 #include<stdlib.h>
 #include<stdbool.h>
 
-struct akun
-{
+struct akun {
     char username[100], password[100];
 };
 FILE *data_akun;
+FILE *data_akun2; //untuk hapus akun customer
 FILE *jenis_trip;
 FILE *pesanan_trip;
 FILE *pembayaran_trip;
@@ -20,7 +20,15 @@ void loginUser();
 void menuUser();
 void jenisTrip();
 void lihatTrip();
-void MJenisTrip();
+void menuAdmin();
+void lihatPenghasilan();
+void lihatAkun();
+
+//fungsi user
+void regisUser();
+int loginUser(int attempt);
+void menuUser();
+
 int main();
 
 void loginAdmin(){
@@ -140,6 +148,8 @@ void menuAdmin(){
     case 5:
         break;
     case 6:
+        break;
+    case 7:
         printf("Anda berhasil logout sampai jumpa kembali..\n");
         system("cls");
         main();
@@ -230,6 +240,26 @@ void MjenisTrip(){
     jenis_trip = fopen("jenis_trip.dat", "rb");
 }
 
+void lihatPenghasilan(){
+    pembayaran_trip = fopen("pembayaran_trip.dat", "rb");
+    top_up = fopen("top_up.dat", "rb");
+}
+
+void lihatAkun(){
+    data_akun = fopen("data_akun.dat", "rb");
+    while (fread(&user, sizeof(struct akun), 1, data_akun)) {
+        printf("Username : %s\n", user.username);
+        printf("Nama : %s\n", user.nama);
+        printf("Alamat : %s\n", user.alamat);
+        printf("No HP : %s\n", user.no_hp);
+        printf("Email : %s\n", user.email);
+        printf("\n");
+    }
+    fclose(data_akun);
+}
+
+
+//fungsi User
 void MemesanTrip(){
 
 }
