@@ -3,8 +3,7 @@
 #include<stdlib.h>
 #include<stdbool.h>
 
-struct akun
-{
+struct akun {
     char username[100], password[100];
     char nama[100];
     char alamat[100];
@@ -26,6 +25,7 @@ void lihatTrip();
 void menuAdmin();
 void lihatPenghasilan();
 void lihatAkun();
+void hapusAkun();
 
 //fungsi user
 void regisUser();
@@ -280,18 +280,46 @@ void lihatPenghasilan(){
 }
 
 void lihatAkun(){
+    FILE *data_akun;
+    struct akun user[100];
+    int count = 0;
+
     data_akun = fopen("data_akun.dat", "rb");
-    while (fread(&user, sizeof(struct akun), 1, data_akun)) {
-        printf("Username : %s\n", user.username);
-        printf("Nama : %s\n", user.nama);
-        printf("Alamat : %s\n", user.alamat);
-        printf("No HP : %s\n", user.no_hp);
-        printf("Email : %s\n", user.email);
-        printf("\n");
+    if(data_akun == NULL) {
+        printf("File tidak ditemukan!\n");
+        return;
+    }
+
+    while (fread(&user[count], sizeof(struct akun), 1, data_akun)) {
+        count++;
     }
     fclose(data_akun);
+
+    for (int i = 0; i < count - 1; i++) {
+        for (int j = 0; j < count - 1; j++) {
+            if (strcmp(user[i].username, user[j].username) > 0) {
+                struct akun temp = user[i];
+                user[j] = user[j + 1];
+                user[j + 1] = temp;
+            }
+        }
+    }
+    printf("\n== Daftar Akun User ==\n");
+    for (int i = 0; i < count; i++) {
+        printf("Username : %s\n", user[i].username);
+        printf("Nama : %s\n", user[i].nama);
+        printf("Alamat : %s\n", user[i].alamat);
+        printf("No HP : %s\n", user[i].no_hp);
+        printf("Email : %s\n", user[i].email);
+        printf("\n");
+    }
 }
 
+void hapusAkun(){
+    data_akun = fopen("data_akun.dat", "rb");
+    FILE *temp = fopen("temp.dat", "wb");
+
+}
 
 //fungsi User
 void MemesanTrip(){
