@@ -8,4 +8,5 @@ if (data_akun != NULL) {
 } else {
     printf("Gagal membuka file.\n");
 }
+
 }
