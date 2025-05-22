@@ -10,6 +10,7 @@ struct akun {
     char alamat[100];
     char no_hp[100];
     char email[100];
+    char feedback[100];
 } user, aktif;
 
 struct TopUp {
@@ -26,17 +27,20 @@ FILE *top_up;
 FILE *feedback;
 
 //fungsi admin
+void loginAdmin();
 void jenisTrip();
 void lihatTrip();
 void menuAdmin();
 void lihatPenghasilan();
 void lihatAkun();
 void hapusAkun();
+void feedbackAdmin();
 
 //fungsi user
 void regisUser();
 int loginUser(int attempt);
 void menuUser();
+void TopUp();
 
 int main();
 
@@ -288,6 +292,22 @@ void lihatPenghasilan(){
     top_up = fopen("top_up.dat", "rb");
 }
 
+void feedbackAdmin(){
+    feedback = fopen("feedback.dat", "rb");
+    if (feedback == NULL) {
+        printf("File tidak ditemukan!\n");
+        return;
+    }
+    fread(&user, sizeof(struct akun), 1, feedback);
+    printf("== Daftar Feedback ==\n");
+    while (fread(&user, sizeof(struct akun), 1, feedback)) {
+        printf("Username : %s\n", user.username);
+        printf("Feedback : %s\n", user.feedback);
+        printf("\n");
+    }
+    fclose(feedback);
+}
+
 void lihatAkun(){
     FILE *data_akun;
     struct akun user[100];
@@ -412,7 +432,7 @@ void RiwayatTrip(){
 }
 
 void Feedback(){
-    printf("== Feedback ==\n");
+    
 }
 
 void GantiPassword(){
