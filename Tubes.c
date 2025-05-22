@@ -24,6 +24,8 @@ FILE *feedback;
 void jenisTrip();
 void lihatTrip();
 void menuAdmin();
+void lihatPenghasilan();
+void lihatAkun();
 
 //fungsi user
 void regisUser();
@@ -79,6 +81,11 @@ void regisUser(){
     printf("==Registrasi Akun User==\n\n");
     printf("Masukkan Username : "); gets(regisUs.username);
     printf("Masukkan Password : "); gets(regisUs.password);
+    printf("Masukkan Nama : "); gets(regisUs.nama);
+    printf("Masukkan Alamat : "); gets(regisUs.alamat);
+    printf("Masukkan No HP : "); gets(regisUs.no_hp);
+    printf("Masukkan Email : "); gets(regisUs.email);
+    printf("\n");
 
     fwrite(&regisUs , sizeof(struct akun), 1 , data_akun);
     printf("\n");
@@ -91,6 +98,7 @@ void regisUser(){
     printf("1. Login User\n");
     printf("2. Kembali ke Menu Utama\n");
     printf("Pilih Menu : "); scanf("%d", &n);
+    getchar();
     switch (n)
     {
     case 1:
@@ -154,8 +162,9 @@ void menuAdmin(){
     printf("2. Melihat Jenis Trip\n");
     printf("3. Melihat Penghasilan\n");
     printf("4. Melihat Akun Customer\n");
-    printf("5. Melihat Penghasilan\n");
-    printf("6. Log Out\n");
+    printf("5. Melihat Feedback\n");
+    printf("6. Hapus Data Customer\n");
+    printf("7. Log Out\n");
 
     printf("Pilih Menu : "); scanf("%d", &mA);
     getchar();
@@ -170,13 +179,17 @@ void menuAdmin(){
     case 3:
         break;
     case 4:
+        lihatAkun();
         break;
     case 5:
         break;
     case 6:
+        break;
+    case 7:
         printf("Anda berhasil logout sampai jumpa kembali..\n");
         system("cls");
         main();
+        break;
     default:
         break;
     }
@@ -255,14 +268,29 @@ void menuUser(){
 //fungsi Admin
 void jenisTrip(){
     jenis_trip = fopen("jenis_trip.dat", "ab");
-
 }
 
 void lihatTrip(){
     jenis_trip = fopen("jenis_trip.dat", "rb");
 }
 
+void lihatPenghasilan(){
+    pembayaran_trip = fopen("pembayaran_trip.dat", "rb");
+    top_up = fopen("top_up.dat", "rb");
+}
 
+void lihatAkun(){
+    data_akun = fopen("data_akun.dat", "rb");
+    while (fread(&user, sizeof(struct akun), 1, data_akun)) {
+        printf("Username : %s\n", user.username);
+        printf("Nama : %s\n", user.nama);
+        printf("Alamat : %s\n", user.alamat);
+        printf("No HP : %s\n", user.no_hp);
+        printf("Email : %s\n", user.email);
+        printf("\n");
+    }
+    fclose(data_akun);
+}
 
 
 //fungsi User
