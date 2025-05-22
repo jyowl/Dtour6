@@ -9,7 +9,7 @@ struct akun {
     char alamat[100];
     char no_hp[100];
     char email[100];
-    char feedback[100];
+    char feedback[300];
 } user, aktif;
 
 struct TopUp {
@@ -40,6 +40,7 @@ void regisUser();
 int loginUser(int attempt);
 void menuUser();
 void TopUp();
+void Feedback();
 
 int main();
 
@@ -192,6 +193,7 @@ void menuAdmin(){
         lihatAkun();
         break;
     case 5:
+        feedbackAdmin();
         break;
     case 6:
         hapusAkun();
@@ -210,7 +212,7 @@ void menuAdmin(){
 int main(){
     int n, attempt = 3;
     
-    system("cls");
+    //system("cls");
     printf("Menu Utama :\n");
     printf("1. Login Admin\n");
     printf("2. Registrasi User\n");
@@ -243,7 +245,7 @@ void menuUser(){
     printf("3. Pembayaran\n");
     printf("4. Top Up Saldo\n");
     printf("5. Riwayat Trip\n");
-    printf("6. Feedback");
+    printf("6. Feedback\n");
     printf("7. Ganti Password\n");
     printf("8. Log Out\n");
 
@@ -263,6 +265,7 @@ void menuUser(){
     case 5:
         break;
     case 6:
+        Feedback();
         break;
     case 7:
         break;
@@ -292,19 +295,26 @@ void lihatPenghasilan(){
 }
 
 void feedbackAdmin(){
+    FILE *feedback;
+    system("cls");
     feedback = fopen("feedback.dat", "rb");
     if (feedback == NULL) {
         printf("File tidak ditemukan!\n");
         return;
     }
-    fread(&user, sizeof(struct akun), 1, feedback);
-    printf("== Daftar Feedback ==\n");
+    printf("== Daftar Feedback Usser ==\n");
     while (fread(&user, sizeof(struct akun), 1, feedback)) {
         printf("Username : %s\n", user.username);
         printf("Feedback : %s\n", user.feedback);
         printf("\n");
     }
     fclose(feedback);
+    printf("\n");
+
+    printf("Tekan Enter untuk kembali ke menu admin...\n");
+    system("pause");
+    system("cls");
+    menuAdmin();
 }
 
 void lihatAkun(){
@@ -432,21 +442,26 @@ void RiwayatTrip(){
 
 void Feedback(){
     FILE *feedback;
-    char pesan[250];
 
+    printf("\n");
+    printf("== Feedback ==\n");
     feedback = fopen("feedback.dat", "ab");
     if (feedback == NULL){
         printf("Tidak ada feedback user\n");
     } else {
         printf("Masukkan pesan feedback Anda: ");
-        fgets(pesan, sizeof(pesan), stdin);
-        pesan[strcspn(pesan, "\n")] = '\0';
+        fgets(user.feedback, sizeof(user.feedback), stdin);
+        user.feedback[strcspn(user.feedback, "\n")] = '\0';
 
-        fwrite(pesan, sizeof(char), strlen(pesan), feedback);
-        fwrite("\n", sizeof(char), 1, feedback);
-        
+        fwrite(&user, sizeof(struct akun), 1, feedback);
+    
         fclose(feedback);
     }
+    printf("Feedback berhasil disimpan.\n");
+    printf("Tekan Enter untuk kembali ke menu user...\n");
+    system("pause");
+    system("cls");
+    menuUser(); 
 }
 
 void GantiPassword(){
