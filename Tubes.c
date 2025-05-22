@@ -409,6 +409,7 @@ void Pembayaran(){
 }
 
 void TopUp(){
+    printf("== Top Up Saldo ==\n");
     top_up = fopen("top_up.dat", "ab");
     if (!top_up) {                       
         perror("File tidak bisa dibuka");
@@ -424,17 +425,18 @@ void TopUp(){
         return;
     }
     getchar();
-
     struct TopUp rek;
     rek.nominal = nominal;
     if (fwrite(&rek, sizeof(struct TopUp), 1, top_up) != 1) {
         puts("Gagal menyimpan data top-up!");
     } else {
-        printf("Tekan Enter untuk kembali ke menu user...\n");
-        system("cls");
-        system("pause");
         printf("Top-up sebesar Rp %.2f berhasil disimpan.\n", nominal);
     }
+    fclose(top_up);
+    printf("Tekan Enter untuk kembali ke menu user...\n");
+    system("pause");    
+    system("cls");
+    menuUser();
 }
 
 void RiwayatTrip(){
