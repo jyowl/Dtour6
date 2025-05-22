@@ -3,7 +3,6 @@
 #include<stdlib.h>
 #include<stdbool.h>
 
-
 struct akun {
     char username[100], password[100];
     char nama[100];
