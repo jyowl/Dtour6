@@ -6,7 +6,13 @@
 struct akun
 {
     char username[100], password[100];
-};
+    char nama[100];
+    char alamat[100];
+    char no_hp[100];
+    char email[100];
+} user, aktif;
+
+//deklarasi nama File
 FILE *data_akun;
 FILE *jenis_trip;
 FILE *pesanan_trip;
@@ -14,14 +20,18 @@ FILE *pembayaran_trip;
 FILE *top_up;
 FILE *feedback;
 
-//deklarasi nama File
-void regisUser();
-void loginUser();
-void menuUser();
+//fungsi admin
 void jenisTrip();
 void lihatTrip();
-void MJenisTrip();
+void menuAdmin();
+
+//fungsi user
+void regisUser();
+int loginUser(int attempt);
+void menuUser();
+
 int main();
+
 
 void loginAdmin(){
     char usAdmin[50], pasAdmin[50];
@@ -59,9 +69,13 @@ void loginAdmin(){
 
 
 void regisUser(){
+    int attempt = 3;
+    int n;
+
     system("cls");
     data_akun = fopen("data_akun.dat", "ab");
     struct akun regisUs;
+
     printf("==Registrasi Akun User==\n\n");
     printf("Masukkan Username : "); gets(regisUs.username);
     printf("Masukkan Password : "); gets(regisUs.password);
@@ -72,44 +86,64 @@ void regisUser(){
     system("pause");
 
     fclose(data_akun);
-    loginUser();
+
+    printf("\n");
+    printf("1. Login User\n");
+    printf("2. Kembali ke Menu Utama\n");
+    printf("Pilih Menu : "); scanf("%d", &n);
+    switch (n)
+    {
+    case 1:
+        system("cls");
+        loginUser(attempt);
+        break;
+    case 2:
+        main();
+        break;
+    default:
+        printf("Pilihan tidak valid!!\n");
+        break;
+    }
+    
 }
 
-void loginUser(){ //cara while loop
+int loginUser(int attempt){ 
     data_akun = fopen("data_akun.dat", "rb");
-    struct akun login, data_acc;
-    bool found = false;
-    int kesempatan = 3;
-    
-    system("cls");
-    if (data_akun == NULL) {
-        printf("File tidak bisa dibuka.\n");
-         return;
-     }
-    
-    system("cls");
-    printf("==Login Akun User==\n\n");
-    printf("Masukkan Username : "); gets(login.username);
-    printf("Masukkan Password : "); gets(login.password);
-    printf("\n");
+    char username[50], password[50];
 
-    while (fread(&data_acc, sizeof(struct akun), 1 , data_akun) != 0) {
-        if (strcmp(login.username, data_acc.username) == 0 &&
-            strcmp(login.password, data_acc.password)== 0) {
-            found = true;
-            printf("Login berhasil! Selamat datang di DTour %s!! \n", login.username);
+    printf("== Login User ==\n");
+    printf("Username : "); gets(username);
+    printf("Password : "); gets(password);
+
+    while (fread(&user, sizeof(struct akun), 1, data_akun))
+    {
+        if (strcmp(user.username, username) == 0 && strcmp(user.password, password) == 0)
+        {
+            aktif = user;
+            printf("Selamat datang %s di D'Tour!!\n", aktif.username);
             fclose(data_akun);
-            system("pause");
-            menuUser();  
-            break;
-        } 
-    } 
-    fclose(data_akun);
-    
-    if (!found){
-        printf("Username atau password salah, silahkan coba lagi!!\n");
-        system("pause");
+            menuUser();
+            return 0;
+        }
     }
+    
+    attempt--;
+    fclose(data_akun);
+
+    if (attempt > 0) {
+        system("cls");
+        printf("Username atau password salah, silahkan coba lagi!!\n");
+        printf("Kesempatan anda tersisa %d\n", attempt);
+        system("pause");
+        system("cls");
+        loginUser(attempt);
+    } else{
+        printf("Kesempatan anda sudah habis, silahkan refresh.\n");
+        system("pause");
+        system("cls");
+        main();
+    }
+    
 }
 
 void menuAdmin(){
@@ -149,19 +183,9 @@ void menuAdmin(){
 
 }
 
-
-void jenisTrip(){
-    jenis_trip = fopen("jenis_trip.dat", "ab");
-
-}
-
-void lihatTrip(){
-    jenis_trip = fopen("jenis_trip.dat", "rb");
-}
-
 int main(){
-    int n;
-
+    int n, attempt = 3;
+    
     system("cls");
     printf("Menu Utama :\n");
     printf("1. Login Admin\n");
@@ -171,16 +195,17 @@ int main(){
     getchar();
     switch (n)
     {
-    case 1:
+        case 1:
         loginAdmin();
         break;
-    case 2:
+        case 2:
         regisUser();
         break;
-    case 3:
-        loginUser();
+        case 3:
+        system("cls");
+        loginUser(attempt);
         break;
-    default:
+        default:
         break;
     }
 }
@@ -223,15 +248,26 @@ void menuUser(){
     default:
         break;
     }
+    
+}
+
+
+//fungsi Admin
+void jenisTrip(){
+    jenis_trip = fopen("jenis_trip.dat", "ab");
 
 }
 
-void MjenisTrip(){
+void lihatTrip(){
     jenis_trip = fopen("jenis_trip.dat", "rb");
 }
 
-void MemesanTrip(){
 
+
+
+//fungsi User
+void MemesanTrip(){
+    
 }
 
 void Pembayaran(){
