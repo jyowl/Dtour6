@@ -282,7 +282,8 @@ void menuUser(){
 
 //fungsi Admin
 void jenisTrip(){
-    jenis_trip = fopen("jenis_trip.dat", "ab");
+    jenis_trip = fopen("jenis_trip.dat", "rb");
+
 }
 
 void lihatTrip(){
@@ -437,8 +438,35 @@ void TopUp(){
 }
 
 void RiwayatTrip(){
-    printf("== Riwayat Trip ==\n");
-}
+    FILE *RiwayatTrip;
+     struct{
+        char namaTrip[50];
+        float hargaTrip;
+     }pesananTrip;
+
+    int ditemukan = 0;
+
+     RiwayatTrip = fopen("pesanan_trip.dat", "rb");
+
+    if(RiwayatTrip == NULL) {
+        printf("Tidak ada riwayat pesanan\n");
+        return 1;
+    }
+     printf("== Riwayat Trip ==\n");
+     while(fread(&user, sizeof(pesananTrip), 1, RiwayatTrip) == 1){
+        printf("Trip : %s\n", pesananTrip.namaTrip);
+        printf("Harga : Rp %.2f\n\n", pesananTrip.hargaTrip);
+        ditemukan = 1;
+     }
+
+     if(!ditemukan){
+        printf("Tidak ada riwayat pesanan\n");
+     }
+
+     fclose(RiwayatTrip);
+     printf("Kembali ke menu user\n");
+
+    }
 
 void Feedback(){
     FILE *feedback;
