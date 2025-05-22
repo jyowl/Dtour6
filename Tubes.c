@@ -296,14 +296,14 @@ void lihatAkun(){
     fclose(data_akun);
 
     for (int i = 0; i < count - 1; i++) {
-        for (int j = 0; j < count - 1; j++) {
-            if (strcmp(user[i].username, user[j].username) > 0) {
-                struct akun temp = user[i];
+        for (int j = 0; j < count - i - 1; j++) {
+            if (strcmp(user[j].username, user[j + 1].username) > 0) {
+                struct akun temp = user[j];
                 user[j] = user[j + 1];
                 user[j + 1] = temp;
             }
         }
-    }
+    }   
     printf("\n== Daftar Akun User ==\n");
     for (int i = 0; i < count; i++) {
         printf("Username : %s\n", user[i].username);
