@@ -3,8 +3,8 @@
 #include<stdlib.h>
 #include<stdbool.h>
 
-struct akun
-{
+
+struct akun {
     char username[100], password[100];
     char nama[100];
     char alamat[100];
@@ -14,6 +14,7 @@ struct akun
 
 //deklarasi nama File
 FILE *data_akun;
+FILE *data_akun2; //untuk hapus akun customer
 FILE *jenis_trip;
 FILE *pesanan_trip;
 FILE *pembayaran_trip;
@@ -26,6 +27,7 @@ void lihatTrip();
 void menuAdmin();
 void lihatPenghasilan();
 void lihatAkun();
+void hapusAkun();
 
 //fungsi user
 void regisUser();
@@ -36,6 +38,7 @@ int main();
 
 
 void loginAdmin(){
+    printf("== Login Admin ==\n");
     char usAdmin[50], pasAdmin[50];
     const char Adminusn[50]  = "admin";
     const char Adminpas[50]  = "admin123";
@@ -184,6 +187,7 @@ void menuAdmin(){
     case 5:
         break;
     case 6:
+        hapusAkun();
         break;
     case 7:
         printf("Anda berhasil logout sampai jumpa kembali..\n");
@@ -280,18 +284,85 @@ void lihatPenghasilan(){
 }
 
 void lihatAkun(){
+    FILE *data_akun;
+    struct akun user[100];
+    int count = 0;
+
     data_akun = fopen("data_akun.dat", "rb");
-    while (fread(&user, sizeof(struct akun), 1, data_akun)) {
-        printf("Username : %s\n", user.username);
-        printf("Nama : %s\n", user.nama);
-        printf("Alamat : %s\n", user.alamat);
-        printf("No HP : %s\n", user.no_hp);
-        printf("Email : %s\n", user.email);
-        printf("\n");
+    if(data_akun == NULL) {
+        printf("File tidak ditemukan!\n");
+        return;
+    }
+
+    while (fread(&user[count], sizeof(struct akun), 1, data_akun)) {
+        count++;
     }
     fclose(data_akun);
+
+    for (int i = 0; i < count - 1; i++) {
+        for (int j = 0; j < count - i - 1; j++) {
+            if (strcmp(user[j].username, user[j + 1].username) > 0) {
+                struct akun temp = user[j];
+                user[j] = user[j + 1];
+                user[j + 1] = temp;
+            }
+        }
+    }   
+    printf("\n== Daftar Akun User ==\n");
+    for (int i = 0; i < count; i++) {
+        printf("Username : %s\n", user[i].username);
+        printf("Nama : %s\n", user[i].nama);
+        printf("Alamat : %s\n", user[i].alamat);
+        printf("No HP : %s\n", user[i].no_hp);
+        printf("Email : %s\n", user[i].email);
+        printf("\n");
+    }
+
+    printf("Tekan Enter untuk kembali ke menu admin...\n");
+    system("pause");
+    menuAdmin();
 }
 
+void hapusAkun(){
+    system("cls");
+    struct akun user;
+    char usnhapus[50];
+    bool found = false;
+    
+    printf("Masukkan username yang ingin dihapus : "); gets(usnhapus);
+    data_akun = fopen("data_akun.dat", "rb");
+    data_akun2 = fopen("data_akun2.dat", "wb");
+
+    if (data_akun == NULL || data_akun2 == NULL) {
+        printf("File tidak ditemukan!\n");
+        return;
+    }
+    
+    while (fread(&user, sizeof(struct akun), 1, data_akun)) {
+        if (strcmp(user.username, usnhapus) != 0) {
+            fwrite(&user, sizeof(struct akun), 1, data_akun2);
+        } else {
+            found = true;
+        }
+    }
+
+    fclose(data_akun);
+    fclose(data_akun2);
+
+    if(found){
+        remove("data_akun.dat");
+        rename("data_akun2.dat", "data_akun.dat");
+        printf("Akun dengan username %s berhasil dihapus.\n", usnhapus);
+    } else {
+        remove("data_akun2.dat");
+        printf("Akun dengan username %s tidak ditemukan.\n", usnhapus);
+    }
+
+    printf("\n");
+    printf("Tekan Enter untuk kembali ke menu admin...\n");
+    system("pause");
+    menuAdmin();
+}
 
 //fungsi User
 void MemesanTrip(){
