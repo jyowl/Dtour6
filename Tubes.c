@@ -263,6 +263,7 @@ void menuUser(){
     case 5:
         break;
     case 6:
+        Feedback();
         break;
     case 7:
         break;
