@@ -3,6 +3,7 @@
 #include<stdlib.h>
 #include<stdbool.h>
 
+
 struct akun {
     char username[100], password[100];
     char nama[100];
@@ -37,6 +38,7 @@ int main();
 
 
 void loginAdmin(){
+    printf("== Login Admin ==\n");
     char usAdmin[50], pasAdmin[50];
     const char Adminusn[50]  = "admin";
     const char Adminpas[50]  = "admin123";
