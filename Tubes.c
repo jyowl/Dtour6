@@ -9,6 +9,10 @@ struct akun
 };
 FILE *data_akun;
 FILE *jenis_trip;
+FILE *pesanan_trip;
+FILE *pembayaran_trip;
+FILE *top_up;
+FILE *feedback;
 
 //deklarasi nama File
 void regisUser();
@@ -16,6 +20,7 @@ void loginUser();
 void menuUser();
 void jenisTrip();
 void lihatTrip();
+void MJenisTrip();
 int main();
 
 void loginAdmin(){
@@ -189,7 +194,9 @@ void menuUser(){
     printf("3. Pembayaran\n");
     printf("4. Top Up Saldo\n");
     printf("5. Riwayat Trip\n");
-    printf("6. Log Out\n");
+    printf("6. Feedback");
+    printf("7. Ganti Password\n");
+    printf("8. Log Out\n");
 
     printf("Pilih Menu : "); scanf("%d", &mU);
     getchar();
@@ -206,11 +213,43 @@ void menuUser(){
     case 5:
         break;
     case 6:
+        break;
+    case 7:
+        break;
+    case 8:
         printf("Anda berhasil logout sampai jumpa kembali..\n");
         system("cls");
         main();
     default:
         break;
     }
+
+}
+
+void MjenisTrip(){
+    jenis_trip = fopen("jenis_trip.dat", "rb");
+}
+
+void MemesanTrip(){
+
+}
+
+void Pembayaran(){
+
+}
+
+void TopUp(){
+
+}
+
+void RiwayatTrip(){
+
+}
+
+void Feedback(){
+
+}
+
+void GantiPassword(){
 
 }
