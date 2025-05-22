@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <ctype.h>
-walawe ini tul
+
 // Struktur data untuk Trip
 typedef struct {
     int id;
