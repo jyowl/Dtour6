@@ -1,73 +1,26 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#define MaxJenis 50
-
-/* Tidak menggunakan typedef struct */
-struct Trip {
-    char jenis[MaxJenis];
-    double harga;
-};
-
-void tambahTrip(void)
-{
-    /* Deklarasi variabel dan membuka file */
-    FILE *fp = fopen("jenis_trip.dat", "ab");
-
-    if (fp == NULL) {
-        puts("file tidak bisa dibuka");
+top_up = fopen("top_up.dat", "ab");
+    if (!top_up) {                       
+        perror("File tidak bisa dibuka");
         return;
     }
 
-    /* Input data trip */
-    struct Trip dataBaru;
-
-    printf("Masukkan jenis trip  : ");
-    fgets(dataBaru.jenis, sizeof(dataBaru.jenis), stdin);
-    dataBaru.jenis[strcspn(dataBaru.jenis, "\n")] = '\0';  // Hapus newline
-
-    printf("Masukkan harga trip : ");
-    while (scanf("%lf", &dataBaru.harga) != 1) {
-        puts("Input tidak valid! Masukkan angka.");
-        while (getchar() != '\n');  // Bersihkan buffer
+    float nominal;
+    printf("\nMasukkan nominal saldo yang akan di-top-up (Rp): ");
+    if (scanf("%f", &nominal) != 1 || nominal <= 0) {
+        puts("Nominal tidak valid – proses dibatalkan.");
+        fclose(top_up);
+        while (getchar() != '\n');
+        return;
     }
-    getchar();  // Buang newline sisa
+    getchar();
 
-    /* Simpan ke file */
-    fwrite(&dataBaru, sizeof(struct Trip), 1, fp);
-    fclose(fp);
-
-    puts("Data trip berhasil disimpan!");
-}
-
-int main(void)
-{
-    int pilih;
-
-    do {
-        puts("\n=== MENU ADMIN ===");
-        puts("1. Tambah Trip baru");
-        puts("0. Keluar");
-        printf("Pilihan Anda: ");
-        if (scanf("%d", &pilih) != 1) {
-            puts("Input tidak valid!");
-            while (getchar() != '\n');
-            continue;
-        }
-        getchar();  // Buang newline
-
-        switch (pilih) {
-            case 1:
-                tambahTrip();
-                break;
-            case 0:
-                puts("Terima kasih!");
-                break;
-            default:
-                puts("Pilihan tidak tersedia!");
-        }
-    } while (pilih != 0);
-
-    return 0;
-}
+    struct TopUp rek;
+    rek.nominal = nominal;
+    if (fwrite(&rek, sizeof(struct TopUp), 1, top_up) != 1) {
+        puts("Gagal menyimpan data top-up!");
+    } else {
+        printf("Tekan Enter untuk kembali ke menu user...\n");
+        system("cls");
+        system("pause");
+        printf("Top-up sebesar Rp %.2f berhasil disimpan.\n", nominal);
+    }
