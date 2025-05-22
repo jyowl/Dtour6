@@ -1,60 +1,319 @@
 #include<stdio.h>
 #include<string.h>
 #include<stdlib.h>
+#include<stdbool.h>
 
 struct akun
 {
     char username[100], password[100];
-} inp;
+    char nama[100];
+    char alamat[100];
+    char no_hp[100];
+    char email[100];
+} user, aktif;
 
-void regis(){
-    printf("Registrasi Akun!\n");
-    printf("Masukkan Username\t: "); scanf("%s", inp.username);
-    printf("Masukkan Password\t: "); scanf("%s", inp.password);
-    system("pause");
-    system("cls");
-}
-void login(){
-    char inputus[100], inputpas[100];
-    int i;
-    printf("Login Akun!\n");
-    printf("Masukkan Username\t: "); scanf("%s", inputus);
-    printf("Masukka Password\t: "); scanf("%s", inputpas);
-    if (strcmp(inputus,inp.username)== 0 && strcmp(inputpas,inp.password)== 0){
-        printf("Selamat Datang di D'Tour!\n");
+//deklarasi nama File
+FILE *data_akun;
+FILE *jenis_trip;
+FILE *pesanan_trip;
+FILE *pembayaran_trip;
+FILE *top_up;
+FILE *feedback;
+
+//fungsi admin
+void jenisTrip();
+void lihatTrip();
+void menuAdmin();
+void lihatPenghasilan();
+void lihatAkun();
+
+//fungsi user
+void regisUser();
+int loginUser(int attempt);
+void menuUser();
+
+int main();
+
+
+void loginAdmin(){
+    char usAdmin[50], pasAdmin[50];
+    const char Adminusn[50]  = "admin";
+    const char Adminpas[50]  = "admin123";
+    int chance = 3;
+
+    printf("Username Admin : "); gets(usAdmin);
+    printf("Password Admin : "); gets(pasAdmin);
+
+    if (strcmp(usAdmin, Adminusn)== 0 && strcmp(pasAdmin, Adminpas)== 0)
+    {
+        printf("Selamat datang Admin di D'Tour!!\n");
+        menuAdmin();
     } else {
-        printf("Username atau Password salah!\n");
-        for ( i = 0; i < 3; i++)
+        while (chance >= 0)
         {
-            printf("Masukkan Username\t: "); scanf("%s", inputus);
-            printf("Masukka Password\t: "); scanf("%s", inputpas);
-            if (strcmp(inputus,inp.username)== 0 && strcmp(inputpas,inp.password)== 0) {
-                printf("Selamat Datang di D'Tour!\n");
+            if (chance == 0){
+                printf("Kesempatan anda sudah habis, silahkan refresh.\n");
                 break;
             } 
+            printf("Username dan password anda salah silahkan coba lagi!!\n");
+            printf("Kesempatan anda tersisa %d\n", chance); 
+            printf("Username Admin : "); gets(usAdmin);
+            printf("Password Admin : "); gets(pasAdmin);
+            if (strcmp(usAdmin, Adminusn)== 0 && strcmp(pasAdmin, Adminpas)== 0){
+            printf("Selamat datang Admin di D'Tour!!");
+            menuAdmin();
+            } 
+            chance--;
             printf("\n");
-            printf("Login gagal!! Silahkan direfresh\n");
         }
     }
 }
 
-void jenisTrip(){
-    
-}
 
-int main(){
+void regisUser(){
+    int attempt = 3;
     int n;
-    printf("Pilih menu (1. Admin/ 2. User) : "); scanf("%d", &n);
+
+    system("cls");
+    data_akun = fopen("data_akun.dat", "ab");
+    struct akun regisUs;
+
+    printf("==Registrasi Akun User==\n\n");
+    printf("Masukkan Username : "); gets(regisUs.username);
+    printf("Masukkan Password : "); gets(regisUs.password);
+    printf("Masukkan Nama : "); gets(regisUs.nama);
+    printf("Masukkan Alamat : "); gets(regisUs.alamat);
+    printf("Masukkan No HP : "); gets(regisUs.no_hp);
+    printf("Masukkan Email : "); gets(regisUs.email);
+    printf("\n");
+
+    fwrite(&regisUs , sizeof(struct akun), 1 , data_akun);
+    printf("\n");
+    printf("Akun berhasil ditambahkan!!\n");
+    system("pause");
+
+    fclose(data_akun);
+
+    printf("\n");
+    printf("1. Login User\n");
+    printf("2. Kembali ke Menu Utama\n");
+    printf("Pilih Menu : "); scanf("%d", &n);
+    getchar();
     switch (n)
     {
     case 1:
-        printf("Menu admin :");
+        system("cls");
+        loginUser(attempt);
         break;
     case 2:
-        regis();
-        login();
+        main();
+        break;
+    default:
+        printf("Pilihan tidak valid!!\n");
+        break;
+    }
+    
+}
+
+int loginUser(int attempt){ 
+    data_akun = fopen("data_akun.dat", "rb");
+    char username[50], password[50];
+
+    printf("== Login User ==\n");
+    printf("Username : "); gets(username);
+    printf("Password : "); gets(password);
+
+    while (fread(&user, sizeof(struct akun), 1, data_akun))
+    {
+        if (strcmp(user.username, username) == 0 && strcmp(user.password, password) == 0)
+        {
+            aktif = user;
+            printf("Selamat datang %s di D'Tour!!\n", aktif.username);
+            fclose(data_akun);
+            menuUser();
+            return 0;
+        }
+    }
+    
+    attempt--;
+    fclose(data_akun);
+
+    if (attempt > 0) {
+        system("cls");
+        printf("Username atau password salah, silahkan coba lagi!!\n");
+        printf("Kesempatan anda tersisa %d\n", attempt);
+        system("pause");
+        system("cls");
+        loginUser(attempt);
+    } else{
+        printf("Kesempatan anda sudah habis, silahkan refresh.\n");
+        system("pause");
+        system("cls");
+        main();
+    }
+    
+}
+
+void menuAdmin(){
+    int mA;
+    system("cls");
+    printf("Menu Utama :\n");
+    printf("1. Menambah Trip\n");
+    printf("2. Melihat Jenis Trip\n");
+    printf("3. Melihat Penghasilan\n");
+    printf("4. Melihat Akun Customer\n");
+    printf("5. Melihat Feedback\n");
+    printf("6. Hapus Data Customer\n");
+    printf("7. Log Out\n");
+
+    printf("Pilih Menu : "); scanf("%d", &mA);
+    getchar();
+    switch (mA)
+    {
+    case 1:
+        jenisTrip();
+        break;
+    case 2:
+        lihatTrip();
+        break;
+    case 3:
+        break;
+    case 4:
+        lihatAkun();
+        break;
+    case 5:
+        break;
+    case 6:
+        break;
+    case 7:
+        printf("Anda berhasil logout sampai jumpa kembali..\n");
+        system("cls");
+        main();
+        break;
     default:
         break;
     }
+
+}
+
+int main(){
+    int n, attempt = 3;
+    
+    system("cls");
+    printf("Menu Utama :\n");
+    printf("1. Login Admin\n");
+    printf("2. Registrasi User\n");
+    printf("3. Login User\n");
+    printf("Pilih Menu : "); scanf("%d", &n);
+    getchar();
+    switch (n)
+    {
+        case 1:
+        loginAdmin();
+        break;
+        case 2:
+        regisUser();
+        break;
+        case 3:
+        system("cls");
+        loginUser(attempt);
+        break;
+        default:
+        break;
+    }
+}
+
+void menuUser(){
+    int mU;
+    system("cls");
+    printf("Menu User :\n");
+    printf("1. Melihat Jenis Trip\n");
+    printf("2. Memesan Trip\n");
+    printf("3. Pembayaran\n");
+    printf("4. Top Up Saldo\n");
+    printf("5. Riwayat Trip\n");
+    printf("6. Feedback");
+    printf("7. Ganti Password\n");
+    printf("8. Log Out\n");
+
+    printf("Pilih Menu : "); scanf("%d", &mU);
+    getchar();
+    switch (mU)
+    {
+    case 1:
+        break;
+    case 2:
+        break;
+    case 3:
+        break;
+    case 4:
+        break;
+    case 5:
+        break;
+    case 6:
+        break;
+    case 7:
+        break;
+    case 8:
+        printf("Anda berhasil logout sampai jumpa kembali..\n");
+        system("cls");
+        main();
+    default:
+        break;
+    }
+    
+}
+
+
+//fungsi Admin
+void jenisTrip(){
+    jenis_trip = fopen("jenis_trip.dat", "ab");
+}
+
+void lihatTrip(){
+    jenis_trip = fopen("jenis_trip.dat", "rb");
+}
+
+void lihatPenghasilan(){
+    pembayaran_trip = fopen("pembayaran_trip.dat", "rb");
+    top_up = fopen("top_up.dat", "rb");
+}
+
+void lihatAkun(){
+    data_akun = fopen("data_akun.dat", "rb");
+    while (fread(&user, sizeof(struct akun), 1, data_akun)) {
+        printf("Username : %s\n", user.username);
+        printf("Nama : %s\n", user.nama);
+        printf("Alamat : %s\n", user.alamat);
+        printf("No HP : %s\n", user.no_hp);
+        printf("Email : %s\n", user.email);
+        printf("\n");
+    }
+    fclose(data_akun);
+}
+
+
+//fungsi User
+void MemesanTrip(){
+    
+}
+
+void Pembayaran(){
+
+}
+
+void TopUp(){
+
+}
+
+void RiwayatTrip(){
+
+}
+
+void Feedback(){
+
+}
+
+void GantiPassword(){
 
 }
