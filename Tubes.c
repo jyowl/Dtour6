@@ -1,53 +1,214 @@
 #include<stdio.h>
 #include<string.h>
 #include<stdlib.h>
+#include<stdbool.h>
 
 struct akun
 {
     char username[100], password[100];
-} inp;
+};
+FILE *data_akun;
+FILE *jenis_trip;
 
-void regis(){
-    printf("Registrasi Akun!\n");
-    printf("Masukkan Username\t: "); scanf("%s", inp.username);
-    printf("Masukkan Password\t: "); scanf("%s", inp.password);
-    system("pause");
-    system("cls");
-}
-void login(){
-    char inputus[100], inputpas[100];
-    int i;
-    printf("Login Akun!\n");
-    printf("Masukkan Username\t: "); scanf("%s", inputus);
-    printf("Masukka Password\t: "); scanf("%s", inputpas);
-    if (strcmp(inputus,inp.username)== 0 && strcmp(inputpas,inp.password)== 0){
-        printf("Selamat Datang di D'Tour!\n");
+//deklarasi nama File
+void regisUser();
+void loginUser();
+void menuUser();
+void jenisTrip();
+void lihatTrip();
+int main();
+
+void loginAdmin(){
+    char usAdmin[50], pasAdmin[50];
+    const char Adminusn[50]  = "admin";
+    const char Adminpas[50]  = "admin123";
+    int chance = 3;
+
+    printf("Username Admin : "); gets(usAdmin);
+    printf("Password Admin : "); gets(pasAdmin);
+
+    if (strcmp(usAdmin, Adminusn)== 0 && strcmp(pasAdmin, Adminpas)== 0)
+    {
+        printf("Selamat datang Admin di D'Tour!!\n");
+        menuAdmin();
     } else {
-        printf("Username atau Password salah!\n");
-        for ( i = 0; i < 3; i++)
+        while (chance >= 0)
         {
-            printf("Masukkan Username\t: "); scanf("%s", inputus);
-            printf("Masukka Password\t: "); scanf("%s", inputpas);
-            if (strcmp(inputus,inp.username)== 0 && strcmp(inputpas,inp.password)== 0) {
-                printf("Selamat Datang di D'Tour!\n");
+            if (chance == 0){
+                printf("Kesempatan anda sudah habis, silahkan refresh.\n");
                 break;
             } 
-            printf("Logil gagal!! Silahkan direfresh\n");
+            printf("Username dan password anda salah silahkan coba lagi!!\n");
+            printf("Kesempatan anda tersisa %d\n", chance); 
+            printf("Username Admin : "); gets(usAdmin);
+            printf("Password Admin : "); gets(pasAdmin);
+            if (strcmp(usAdmin, Adminusn)== 0 && strcmp(pasAdmin, Adminpas)== 0){
+            printf("Selamat datang Admin di D'Tour!!");
+            menuAdmin();
+            } 
+            chance--;
+            printf("\n");
         }
     }
 }
 
+
+void regisUser(){
+    system("cls");
+    data_akun = fopen("data_akun.dat", "ab");
+    struct akun regisUs;
+    printf("==Registrasi Akun User==\n\n");
+    printf("Masukkan Username : "); gets(regisUs.username);
+    printf("Masukkan Password : "); gets(regisUs.password);
+
+    fwrite(&regisUs , sizeof(struct akun), 1 , data_akun);
+    printf("\n");
+    printf("Akun berhasil ditambahkan!!\n");
+    system("pause");
+
+    fclose(data_akun);
+    loginUser();
+}
+
+void loginUser(){ //cara while loop
+    data_akun = fopen("data_akun.dat", "rb");
+    struct akun login, data_acc;
+    bool found = false;
+    int kesempatan = 3;
+    
+    system("cls");
+    if (data_akun == NULL) {
+        printf("File tidak bisa dibuka.\n");
+         return;
+     }
+    
+    system("cls");
+    printf("==Login Akun User==\n\n");
+    printf("Masukkan Username : "); gets(login.username);
+    printf("Masukkan Password : "); gets(login.password);
+    printf("\n");
+
+    while (fread(&data_acc, sizeof(struct akun), 1 , data_akun) != 0) {
+        if (strcmp(login.username, data_acc.username) == 0 &&
+            strcmp(login.password, data_acc.password)== 0) {
+            found = true;
+            printf("Login berhasil! Selamat datang di DTour %s!! \n", login.username);
+            fclose(data_akun);
+            system("pause");
+            menuUser();  
+            break;
+        } 
+    } 
+    fclose(data_akun);
+    
+    if (!found){
+        printf("Username atau password salah, silahkan coba lagi!!\n");
+        system("pause");
+    }
+}
+
+void menuAdmin(){
+    int mA;
+    system("cls");
+    printf("Menu Utama :\n");
+    printf("1. Menambah Trip\n");
+    printf("2. Melihat Jenis Trip\n");
+    printf("3. Melihat Penghasilan\n");
+    printf("4. Melihat Akun Customer\n");
+    printf("5. Melihat Penghasilan\n");
+    printf("6. Log Out\n");
+
+    printf("Pilih Menu : "); scanf("%d", &mA);
+    getchar();
+    switch (mA)
+    {
+    case 1:
+        jenisTrip();
+        break;
+    case 2:
+        lihatTrip();
+        break;
+    case 3:
+        break;
+    case 4:
+        break;
+    case 5:
+        break;
+    case 6:
+        printf("Anda berhasil logout sampai jumpa kembali..\n");
+        system("cls");
+        main();
+    default:
+        break;
+    }
+
+}
+
+
+void jenisTrip(){
+    jenis_trip = fopen("jenis_trip.dat", "ab");
+
+}
+
+void lihatTrip(){
+    jenis_trip = fopen("jenis_trip.dat", "rb");
+}
+
 int main(){
     int n;
-    printf("Pilih menu (1. Admin/ 2. User) : "); scanf("%d", &n);
+
+    system("cls");
+    printf("Menu Utama :\n");
+    printf("1. Login Admin\n");
+    printf("2. Registrasi User\n");
+    printf("3. Login User\n");
+    printf("Pilih Menu : "); scanf("%d", &n);
+    getchar();
     switch (n)
     {
     case 1:
-        printf("Menu admin :");
+        loginAdmin();
         break;
     case 2:
-        regis();
-        login();
+        regisUser();
+        break;
+    case 3:
+        loginUser();
+        break;
+    default:
+        break;
+    }
+}
+
+void menuUser(){
+    int mU;
+    system("cls");
+    printf("Menu User :\n");
+    printf("1. Melihat Jenis Trip\n");
+    printf("2. Memesan Trip\n");
+    printf("3. Pembayaran\n");
+    printf("4. Top Up Saldo\n");
+    printf("5. Riwayat Trip\n");
+    printf("6. Log Out\n");
+
+    printf("Pilih Menu : "); scanf("%d", &mU);
+    getchar();
+    switch (mU)
+    {
+    case 1:
+        break;
+    case 2:
+        break;
+    case 3:
+        break;
+    case 4:
+        break;
+    case 5:
+        break;
+    case 6:
+        printf("Anda berhasil logout sampai jumpa kembali..\n");
+        system("cls");
+        main();
     default:
         break;
     }
