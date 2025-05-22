@@ -431,7 +431,22 @@ void RiwayatTrip(){
 }
 
 void Feedback(){
-    
+    FILE *feedback;
+    char pesan[250];
+
+    feedback = fopen("feedback.dat", "ab");
+    if (feedback == NULL){
+        printf("Tidak ada feedback user\n");
+    } else {
+        printf("Masukkan pesan feedback Anda: ");
+        fgets(pesan, sizeof(pesan), stdin);
+        pesan[strcspn(pesan, "\n")] = '\0';
+
+        fwrite(pesan, sizeof(char), strlen(pesan), feedback);
+        fwrite("\n", sizeof(char), 1, feedback);
+        
+        fclose(feedback);
+    }
 }
 
 void GantiPassword(){
