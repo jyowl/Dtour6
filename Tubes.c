@@ -1,99 +1,22 @@
 #include<stdio.h>
 #include<string.h>
 #include<stdlib.h>
+#include<stdbool.h>
 
 struct akun
 {
     char username[100], password[100];
 };
 FILE *data_akun;
-
-
+FILE *jenis_trip;
 
 //deklarasi nama File
 void regisUser();
 void loginUser();
 void menuUser();
+void jenisTrip();
+void lihatTrip();
 int main();
-
-
-void regisUser(){
-    system("cls");
-    data_akun = fopen("data_akun.dat", "ab");
-    struct akun regisUs;
-    printf("==Registrasi Akun User==\n\n");
-    printf("Masukkan Username : "); gets(regisUs.username);
-    printf("Masukkan Password : "); gets(regisUs.password);
-
-    fwrite(&regisUs , sizeof(struct akun), 1 , data_akun);
-    printf("\n");
-    printf("Akun berhasil ditambahkan!!\n");
-    system("pause");
-
-    fclose(data_akun);
-    loginUser();
-}
-
-void loginUser(){
-    data_akun = fopen("data_akun.dat", "rb");
-    struct akun login, data_acc;
-
-    system("cls");
-    printf("==Login Akun User==\n\n");
-    printf("Masukkan Username : "); gets(login.username);
-    printf("Masukkan Password : "); gets(login.password);
-    printf("\n");
-
-    while (fread(&data_acc, sizeof(struct akun), 1 , data_akun) != 0) {
-        if (strcmp(login.username, data_acc.username) == 0 &&
-            strcmp(login.password, data_acc.password)== 0) {
-            printf("Login berhasil! Selamat datang di DTour %s!!!\n", login.username);
-            system("pause");
-            menuUser();
-            break;
-        } 
-    } 
-    
-    printf("Username tidak ditemukan, silahkan registrasi terlebih dahulu!!\n");
-    system("pause");    
-    fclose(data_akun);
-}
-
-void menuAdmin(){
-    int mA;
-    system("cls");
-    printf("Menu Utama :\n");
-    printf("1. Menambah Trip\n");
-    printf("2. Melihat Jenis Trip\n");
-    printf("3. Melihat Penghasilan\n");
-    printf("4. Melihat Akun Customer\n");
-    printf("5. Melihat Penghasilan\n");
-    printf("6. Log Out\n");
-
-    printf("Pilih Menu : "); scanf("%d", &mA);
-    getchar();
-    switch (mA)
-    {
-    case 1:
-        break;
-    case 2:
-        break;
-    
-    case 3:
-        break;
-    case 4:
-        break;
-    case 5:
-        break;
-    case 6:
-        printf("Anda berhasil logout sampai jumpa kembali..\n");
-        system("cls");
-        main();
-    default:
-        break;
-    }
-
-}
 
 void loginAdmin(){
     char usAdmin[50], pasAdmin[50];
@@ -129,8 +52,106 @@ void loginAdmin(){
     }
 }
 
-void jenisTrip(){
+
+void regisUser(){
+    system("cls");
+    data_akun = fopen("data_akun.dat", "ab");
+    struct akun regisUs;
+    printf("==Registrasi Akun User==\n\n");
+    printf("Masukkan Username : "); gets(regisUs.username);
+    printf("Masukkan Password : "); gets(regisUs.password);
+
+    fwrite(&regisUs , sizeof(struct akun), 1 , data_akun);
+    printf("\n");
+    printf("Akun berhasil ditambahkan!!\n");
+    system("pause");
+
+    fclose(data_akun);
+    loginUser();
+}
+
+void loginUser(){ //cara while loop
+    data_akun = fopen("data_akun.dat", "rb");
+    struct akun login, data_acc;
+    bool found = false;
+    int kesempatan = 3;
     
+    system("cls");
+    if (data_akun == NULL) {
+        printf("File tidak bisa dibuka.\n");
+         return;
+     }
+    
+    system("cls");
+    printf("==Login Akun User==\n\n");
+    printf("Masukkan Username : "); gets(login.username);
+    printf("Masukkan Password : "); gets(login.password);
+    printf("\n");
+
+    while (fread(&data_acc, sizeof(struct akun), 1 , data_akun) != 0) {
+        if (strcmp(login.username, data_acc.username) == 0 &&
+            strcmp(login.password, data_acc.password)== 0) {
+            found = true;
+            printf("Login berhasil! Selamat datang di DTour %s!! \n", login.username);
+            fclose(data_akun);
+            system("pause");
+            menuUser();  
+            break;
+        } 
+    } 
+    fclose(data_akun);
+    
+    if (!found){
+        printf("Username atau password salah, silahkan coba lagi!!\n");
+        system("pause");
+    }
+}
+
+void menuAdmin(){
+    int mA;
+    system("cls");
+    printf("Menu Utama :\n");
+    printf("1. Menambah Trip\n");
+    printf("2. Melihat Jenis Trip\n");
+    printf("3. Melihat Penghasilan\n");
+    printf("4. Melihat Akun Customer\n");
+    printf("5. Melihat Penghasilan\n");
+    printf("6. Log Out\n");
+
+    printf("Pilih Menu : "); scanf("%d", &mA);
+    getchar();
+    switch (mA)
+    {
+    case 1:
+        jenisTrip();
+        break;
+    case 2:
+        lihatTrip();
+        break;
+    case 3:
+        break;
+    case 4:
+        break;
+    case 5:
+        break;
+    case 6:
+        printf("Anda berhasil logout sampai jumpa kembali..\n");
+        system("cls");
+        main();
+    default:
+        break;
+    }
+
+}
+
+
+void jenisTrip(){
+    jenis_trip = fopen("jenis_trip.dat", "ab");
+
+}
+
+void lihatTrip(){
+    jenis_trip = fopen("jenis_trip.dat", "rb");
 }
 
 int main(){
@@ -159,3 +180,7 @@ int main(){
     }
 }
 
+void menuUser(){
+    system("cls");
+    printf("Menu User :\n");
+}
