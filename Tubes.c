@@ -68,6 +68,7 @@ int pembayaran(float hargaTrip);
 void MemesanTrip();
 void RiwayatTrip();
 void tampilkanSaldoUser();
+void GantiPassword();
 
 //fungsi utama
 int main();
@@ -240,7 +241,7 @@ void menuAdmin(){
 int main(){
     int n, attempt = 3;
     
-    //system("cls");
+    system("cls");
     printf("Menu Utama :\n");
     printf("1. Login Admin\n");
     printf("2. Registrasi User\n");
@@ -301,6 +302,7 @@ void menuUser(){
         Feedback();
         break;
     case 7:
+        GantiPassword();
         break;
     case 8:
         printf("Anda berhasil logout sampai jumpa kembali..\n");
@@ -770,7 +772,6 @@ void RiwayatTrip(){
     getchar();
 }
 
-
 void Feedback(){
     FILE *feedback;
 
@@ -796,5 +797,49 @@ void Feedback(){
 }
 
 void GantiPassword(){
+    system("cls");
+    printf("== Ganti Password ==\n");
+    FILE *data_akun;
+    FILE *data_akun2;
 
+    struct akun user;
+    char username[50], password[50];
+    char newPassword[50];
+    int found = 0;
+
+    data_akun = fopen("data_akun.dat", "rb");
+    data_akun2 = fopen("data_akun2.dat", "wb");
+    if (data_akun == NULL || data_akun2 == NULL) {
+        printf("Gagal membuka file data_akun.dat\n");
+        return;
+    }
+
+    printf("Masukkan username Anda: ");
+    gets(username);
+    printf("Masukkan password lama Anda: ");
+    gets(password);
+    printf("Masukkan password baru Anda: ");
+    gets(newPassword);
+    printf("\n");
+
+    while (fread(&user, sizeof(struct akun), 1, data_akun)) {
+        if (strcmp(user.username, username) == 0 && strcmp(user.password, password) == 0) {
+            strcpy(user.password, newPassword);
+            found = 1;
+        }
+        fwrite(&user, sizeof(struct akun), 1, data_akun2);
+    }
+    fclose(data_akun);
+    fclose(data_akun2);
+    remove("data_akun.dat");
+    rename("data_akun2.dat", "data_akun.dat");
+    if (found) {
+        printf("Password berhasil diubah.\n");
+    } else {
+        printf("Username atau password lama salah.\n");
+    }
+    printf("Tekan Enter untuk kembali ke menu user...\n");
+    system("pause");
+    system("cls");
+    menuUser();
 }
