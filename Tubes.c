@@ -10,6 +10,7 @@ struct akun {
     char no_hp[100];
     char email[100];
     char feedback[300];
+    float nominal;
 } user, aktif;
 
 struct TopUp {
@@ -409,51 +410,71 @@ void Pembayaran(){
 }
 
 void TopUp(){
-    struct TopUp rek;
+     struct akun rek;
+    int ditemukan = 0;
+    FILE *top_up, *top_up2;
 
     printf("== Top Up Saldo ==\n");
 
-    // Hitung saldo saat ini
     float saldo_sekarang = 0.0;
     top_up = fopen("top_up.dat", "rb");
-    if (top_up) {
-        while (fread(&rek, sizeof(struct TopUp), 1, top_up) == 1) {
-            saldo_sekarang += rek.nominal;
+    if (top_up != NULL) {
+        while (fread(&rek, sizeof(struct akun), 1, top_up)) {
+            if (strcmp(rek.username, user.username) == 0) {
+                saldo_sekarang = rek.nominal;
+                ditemukan = 1;
+            }
         }
         fclose(top_up);
     }
 
     printf("Saldo saat ini: Rp %.2f\n", saldo_sekarang);
 
-    // Input nominal top-up
-    float nominal;
-    printf("\nMasukkan nominal saldo yang akan di-top-up (Rp): ");
-    if (scanf("%f", &nominal) != 1 || nominal <= 0) {
+    printf("Masukkan nominal saldo yang akan ditopup (Rp): ");
+    if (scanf("%f", &user.nominal) != 1 || user.nominal <= 0) {
         puts("Nominal tidak valid – proses dibatalkan.");
-        while (getchar() != '\n'); // flush input
+        while (getchar() != '\n');
         return;
     }
-    getchar(); // menangkap newline setelah scanf
+    getchar(); 
 
-    // Simpan data baru
-    top_up = fopen("top_up.dat", "ab");
+    top_up = fopen("top_up.dat", "rb");
+    top_up2 = fopen("temp_top2.dat", "wb");
+
     if (!top_up) {
-        perror("File tidak bisa dibuka");
+        puts("Gagal membuka file untuk update.");
         return;
     }
 
-    rek.nominal = nominal;
-    if (fwrite(&rek, sizeof(struct TopUp), 1, top_up) != 1) {
-        puts("Gagal menyimpan data top-up!");
-    } else {
-        printf("Top-up sebesar Rp %.2f berhasil disimpan.\n", nominal);
-        saldo_sekarang += nominal;
-        printf("Saldo setelah top-up: Rp %.2f\n", saldo_sekarang);
+    if (top_up != NULL) {
+        while (fread(&rek, sizeof(struct akun), 1, top_up)) {
+            if (strcmp(rek.username, user.username) == 0) {
+                rek.nominal += user.nominal;
+                ditemukan = 1;
+            }
+            fwrite(&rek, sizeof(struct akun), 1, top_up);
+        }
+        fclose(top_up);
     }
 
-    fclose(top_up);
+    // Jika belum ada saldo sebelumnya → buat baru
+    if (!ditemukan) {
+        strcpy(rek.username, user.username);
+        rek.nominal = user.nominal;
+        fwrite(&rek, sizeof(struct akun), 1, top_up2);
+    }
+
+    fclose(top_up2);
+    remove("top_up.dat");
+    rename("top_up2.dat", "top_up.dat");
+
+    // Tampilkan hasil
+    printf("Top-up sebesar Rp %.2f berhasil disimpan.\n", user.nominal);
+    saldo_sekarang += user.nominal;
+    printf("Saldo setelah top-up: Rp %.2f\n", saldo_sekarang);
+
     printf("Tekan Enter untuk kembali ke menu user...\n");
-    system("pause");    
+    system("pause");
     system("cls");
     menuUser();
 }
