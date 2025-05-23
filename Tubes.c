@@ -250,17 +250,17 @@ int main(){
     getchar();
     switch (n)
     {
-        case 1:
+    case 1:
         loginAdmin();
         break;
-        case 2:
+    case 2:
         regisUser();
         break;
-        case 3:
+    case 3:
         system("cls");
         loginUser(attempt);
         break;
-        default:
+    default:
         break;
     }
 }
@@ -404,7 +404,53 @@ void lihatTrip(){
 void lihatPenghasilan(){
     pembayaran_trip = fopen("pembayaran_trip.dat", "rb");
     top_up = fopen("top_up.dat", "rb");
+    double nominal, total = 0.0;
+    int pilih;
+    
+    if (pembayaran_trip != NULL) {
+        // Membaca seluruh data pembayaran
+        while (fread(&nominal, sizeof(double), 1, pembayaran_trip) == 1)
+            total += nominal;
+        fclose(pembayaran_trip);
+    } else {
+        puts("File pembayaran.dat tidak bisa dibuka.");
+    }
+
+    // Membuka file topup
+    if (top_up != NULL) {
+        // Membaca seluruh data topup
+        while (fread(&nominal, sizeof(double), 1, top_up) == 1)
+            total += nominal;
+        fclose(top_up);
+    } else {
+        puts("File topup.dat tidak bisa dibuka.");
+    }
+
+    // Menampilkan hasil
+    if (total > 0.0)
+        printf("\nTotal penghasilan: Rp %.2f\n", total);
+    else
+        puts("\nTidak ada data penghasilan yang bisa ditampilkan.");
+
+        puts("1. Lihat Penghasilan");
+        puts("2. Keluar");
+        printf("Masukkan pilihan: ");
+    if (scanf("%d", &pilih) != 1) return;
+
+    switch (pilih) {
+        case 1:  
+          lihatPenghasilan(); 
+          break;
+        case 2:  
+          puts("Program selesai.");      
+          break;
+        default: puts("Pilihan tidak valid.");  
+
+    menuAdmin();
 }
+
+}
+    
 
 void feedbackAdmin(){
     FILE *feedback;
