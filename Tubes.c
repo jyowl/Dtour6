@@ -69,6 +69,7 @@ void MemesanTrip();
 void RiwayatTrip();
 void tampilkanSaldoUser();
 
+//fungsi utama
 int main();
 
 
@@ -294,6 +295,7 @@ void menuUser(){
         TopUp();
         break;
     case 5:
+        RiwayatTrip();
         break;
     case 6:
         Feedback();
@@ -736,35 +738,37 @@ void TopUp(){
 }
 
 void RiwayatTrip(){
+    system("cls");
     FILE *RiwayatTrip;
-     struct{
-        char namaTrip[50];
-        float hargaTrip;
-     }pesananTrip;
-
+    struct pesanan data;
     int ditemukan = 0;
 
-     RiwayatTrip = fopen("pesanan_trip.dat", "rb");
-
-    if(RiwayatTrip == NULL) {
-        printf("Tidak ada riwayat pesanan\n");
+    RiwayatTrip = fopen("pesanan_trip.dat", "rb");
+    if (RiwayatTrip == NULL) {
+        printf("Tidak ada riwayat pesanan.\n");
         return;
     }
-     printf("== Riwayat Trip ==\n");
-     while(fread(&user, sizeof(pesananTrip), 1, RiwayatTrip) == 1){
-        printf("Trip : %s\n", pesananTrip.namaTrip);
-        printf("Harga : Rp %.2f\n\n", pesananTrip.hargaTrip);
-        ditemukan = 1;
-     }
 
-     if(!ditemukan){
-        printf("Tidak ada riwayat pesanan\n");
-     }
-
-     fclose(RiwayatTrip);
-     printf("Kembali ke menu user\n");
-
+    printf("== Riwayat Trip Anda ==\n");
+    while (fread(&data, sizeof(struct pesanan), 1, RiwayatTrip)) {
+        if (strcmp(data.username, user.username) == 0) {
+            printf("Trip  : %s\n", data.namaTrip);
+            printf("Harga : Rp %.2f\n\n", data.hargaTrip);
+            ditemukan = 1;
+        }
     }
+
+    if (!ditemukan) {
+        printf("Anda belum pernah memesan trip.\n");
+    }
+
+    fclose(RiwayatTrip);
+    printf("Tekan Enter untuk kembali...\n");
+    system("pause");
+    system("cls");
+    menuUser();
+    getchar();
+}
 
 
 void Feedback(){
