@@ -29,6 +29,7 @@ struct pesanan {
     int idTrip;
     char namaTrip[100];
     float hargaTrip;
+    int status; // 0 = belum bayar, 1 = sudah bayar 
 };
 
 struct pembayaran {
@@ -46,6 +47,8 @@ FILE *pesanan_trip;
 FILE *pembayaran_trip;
 FILE *top_up;
 FILE *feedback;
+FILE *pesanan;
+FILE *penghasilan;
 
 //fungsi admin
 void loginAdmin();
@@ -69,6 +72,7 @@ void MemesanTrip();
 void RiwayatTrip();
 void tampilkanSaldoUser();
 void GantiPassword();
+void MenuPembayaran();
 
 //fungsi utama
 int main();
@@ -217,6 +221,7 @@ void menuAdmin(){
         lihatTrip();
         break;
     case 3:
+        lihatPenghasilan();
         break;
     case 4:
         lihatAkun();
@@ -246,6 +251,7 @@ int main(){
     printf("1. Login Admin\n");
     printf("2. Registrasi User\n");
     printf("3. Login User\n");
+    printf("0. Keluar\n");
     printf("Pilih Menu : "); scanf("%d", &n);
     getchar();
     switch (n)
@@ -260,7 +266,12 @@ int main(){
         system("cls");
         loginUser(attempt);
         break;
+    case 0:
+        printf("Terima kasih telah menggunakan D'Tour!!\n");
+        exit(0);
+        break;
     default:
+        printf("Pilihan tidak valid!!\n");
         break;
     }
 }
@@ -291,6 +302,7 @@ void menuUser(){
         MemesanTrip();
         break;
     case 3:
+        MenuPembayaran();
         break;
     case 4:
         TopUp();
@@ -400,57 +412,45 @@ void lihatTrip(){
 
 } 
 
-
-void lihatPenghasilan(){
-    pembayaran_trip = fopen("pembayaran_trip.dat", "rb");
-    top_up = fopen("top_up.dat", "rb");
-    double nominal, total = 0.0;
+void lihatPenghasilan() {
+    FILE *pembayaran_trip = fopen("pembayaran_trip.dat", "rb");
+    float nominal, total = 0.0;
     int pilih;
-    
+
     if (pembayaran_trip != NULL) {
-        // Membaca seluruh data pembayaran
-        while (fread(&nominal, sizeof(double), 1, pembayaran_trip) == 1)
+        while (fread(&nominal, sizeof(float), 1, pembayaran_trip) == 1)
             total += nominal;
         fclose(pembayaran_trip);
     } else {
-        puts("File pembayaran.dat tidak bisa dibuka.");
+        puts("File pembayaran_trip.dat tidak bisa dibuka.");
     }
 
-    // Membuka file topup
-    if (top_up != NULL) {
-        // Membaca seluruh data topup
-        while (fread(&nominal, sizeof(double), 1, top_up) == 1)
-            total += nominal;
-        fclose(top_up);
-    } else {
-        puts("File topup.dat tidak bisa dibuka.");
-    }
-
-    // Menampilkan hasil
     if (total > 0.0)
         printf("\nTotal penghasilan: Rp %.2f\n", total);
     else
         puts("\nTidak ada data penghasilan yang bisa ditampilkan.");
 
-        puts("1. Lihat Penghasilan");
-        puts("2. Keluar");
-        printf("Masukkan pilihan: ");
+    puts("1. Lihat Penghasilan Lagi");
+    puts("2. Kembali ke Menu Admin");
+    printf("Masukkan pilihan: ");
     if (scanf("%d", &pilih) != 1) return;
+    getchar();
 
     switch (pilih) {
-        case 1:  
-          lihatPenghasilan(); 
-          break;
-        case 2:  
-          puts("Program selesai.");      
-          break;
-        default: puts("Pilihan tidak valid.");  
-
-    menuAdmin();
+        case 1:
+            system("cls");
+            lihatPenghasilan();
+            break;
+        case 2:
+            system("cls");
+            menuAdmin();
+            break;
+        default:
+            puts("Pilihan tidak valid.");
+            menuAdmin();
+            break;
+    }
 }
-
-}
-    
 
 void feedbackAdmin(){
     FILE *feedback;
@@ -628,25 +628,35 @@ void MemesanTrip(){
             scanf(" %c", &pilihan);
             getchar();
 
+            FILE *pesanan = fopen("pesanan_trip.dat", "ab");
+            if (pesanan == NULL) {
+                printf("Gagal menyimpan pesanan.\n");
+                fclose(jenis_trip);
+                return;
+            }
+
+            struct pesanan riwayat;
+            strcpy(riwayat.username, aktif.username);
+            riwayat.idTrip = trip.idTrip;
+            strcpy(riwayat.namaTrip, trip.namaTrip);
+            riwayat.hargaTrip = trip.hargaTrip;
+
             if (pilihan == 'y' || pilihan == 'Y') {
                 int berhasil = pembayaran(trip.hargaTrip);
                 if (berhasil) {
-                    FILE *pesanan = fopen("pesanan_trip.dat", "ab");
-                    if (pesanan != NULL) {
-                        struct pesanan riwayat;
-                        strcpy(riwayat.username, user.username);
-                        riwayat.idTrip = trip.idTrip;
-                        strcpy(riwayat.namaTrip, trip.namaTrip);
-                        riwayat.hargaTrip = trip.hargaTrip;
-                        fwrite(&riwayat, sizeof(struct pesanan), 1, pesanan);
-                        fclose(pesanan);
-                    }
+                    riwayat.status = 1; // sudah dibayar
+                    fwrite(&riwayat, sizeof(struct pesanan), 1, pesanan);
                     printf("Trip '%s' berhasil dipesan dan dibayar.\n", trip.namaTrip);
+                } else {
+                    printf("Pembayaran gagal.\n");
                 }
             } else {
-                printf("Trip disimpan tanpa pembayaran.\n");
+                riwayat.status = 0; // pending
+                fwrite(&riwayat, sizeof(struct pesanan), 1, pesanan);
+                printf("Trip '%s' berhasil disimpan sebagai pending (belum dibayar).\n", trip.namaTrip);
             }
 
+            fclose(pesanan);
             break;
         }
     }
@@ -661,10 +671,59 @@ void MemesanTrip(){
     getchar();
     system("cls");
     menuUser();
-    
 }
 
-int pembayaran(float hargaTrip){
+void MenuPembayaran() {
+    FILE *pesanan = fopen("pesanan_trip.dat", "rb+");
+    struct pesanan p;
+    int ketemu = 0;
+
+    if (pesanan == NULL) {
+        printf("Tidak ada data pesanan.\n");
+        return;
+    }
+
+    printf("\n== Pembayaran Pesanan Pending ==\n");
+    long pos;
+
+    while ((pos = ftell(pesanan)), fread(&p, sizeof(struct pesanan), 1, pesanan)) {
+        if (strcmp(p.username, aktif.username) == 0 && p.status == 0) {
+            ketemu = 1;
+            printf("\nID Trip   : %d\n", p.idTrip);
+            printf("Nama Trip : %s\n", p.namaTrip);
+            printf("Harga     : Rp %.2f\n", p.hargaTrip);
+            printf("Bayar sekarang? (y/n): ");
+            char pilih;
+            scanf(" %c", &pilih);
+            getchar();
+
+            if (pilih == 'y' || pilih == 'Y') {
+                if (pembayaran(p.hargaTrip)) {
+                    p.status = 1;
+                    fseek(pesanan, pos, SEEK_SET);
+                    fwrite(&p, sizeof(struct pesanan), 1, pesanan);
+                    fflush(pesanan);  // Tambahan penting
+                    printf("Pembayaran berhasil untuk trip %s.\n", p.namaTrip);
+                } else {
+                    printf("Pembayaran gagal.\n");
+                }
+            }
+        }
+    }
+
+    fclose(pesanan);
+
+    if (!ketemu) {
+        printf("Tidak ada pesanan pending.\n");
+    }
+
+    printf("Tekan Enter untuk kembali ke menu...\n");
+    getchar();
+    system("cls");
+    menuUser();
+}
+
+int pembayaran(float hargaTrip) {
     FILE *top_up = fopen("top_up.dat", "rb");
     FILE *top_up2 = fopen("top_up2.dat", "wb");
     struct akun data;
@@ -678,16 +737,23 @@ int pembayaran(float hargaTrip){
     }
 
     while (fread(&data, sizeof(struct akun), 1, top_up)) {
-        if (strcmp(data.username, user.username) == 0) {
+        if (strcmp(data.username, aktif.username) == 0) {
             if (data.nominal >= hargaTrip) {
                 data.nominal -= hargaTrip;
                 printf("Pembayaran berhasil. Sisa saldo: Rp %.2f\n", data.nominal);
                 ditemukan = 1;
+
+                FILE *penghasilan = fopen("pembayaran_trip.dat", "ab");
+                if (penghasilan != NULL) {
+                    fwrite(&hargaTrip, sizeof(float), 1, penghasilan);
+                    fclose(penghasilan);
+                }
+
             } else {
                 printf("Saldo tidak cukup. Silakan top up terlebih dahulu.\n");
                 fclose(top_up);
                 fclose(top_up2);
-                remove("temp_top_up.dat");
+                remove("top_up2.dat");
                 printf("Tekan Enter untuk kembali ke menu user...\n");
                 getchar();
                 system("cls");
@@ -705,6 +771,7 @@ int pembayaran(float hargaTrip){
 
     return ditemukan;
 }
+
 void tampilkanSaldoUser() {
     FILE *top_up = fopen("top_up.dat", "rb");
     struct akun data;
